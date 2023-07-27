@@ -78,6 +78,11 @@ void display(Big_N num)
 
 void isnertInFront(Big_N* num, int val)
 {
+    if(val == '-' - '0')
+    {
+        num->sign = 1;
+        return;
+    }
     node* nn = malloc(sizeof(node));
     if(!nn)
     {
@@ -104,6 +109,11 @@ void isnertInFront(Big_N* num, int val)
 
 void insertInEnd(Big_N* num, int val )
 {
+    if(val == '-' - '0')
+    {
+        num->sign = 1;
+        return;
+    }
     node* nn = malloc(sizeof(node));
     if(!nn)
     {
@@ -205,6 +215,7 @@ int compare(Big_N a, Big_N b)
 
 }
 
+Big_N sub(Big_N* a, Big_N* b);
 Big_N add(Big_N *a, Big_N *b)
 {
     rem_lead_zeros(a);
@@ -221,6 +232,14 @@ Big_N add(Big_N *a, Big_N *b)
 
     if(a1.sign != b1.sign)
     {
+        if(a1.sign == 0) {
+            negation(&b1);
+            return sub(&a1, &b1);
+        }
+        else {
+            negation(&a1);
+            return sub(&b1, &a1);
+        }
         
     }
     else
@@ -268,12 +287,114 @@ Big_N add(Big_N *a, Big_N *b)
 
 }
 
+Big_N sub(Big_N* a, Big_N* b)
+{
+    rem_lead_zeros(a);
+    rem_lead_zeros(b);
+
+    Big_N a1 = *a;
+    Big_N b1 = *b;
+
+    Big_N substarction;
+    init_num(&substarction);
+
+
+    int c = 0;
+    int s;
+    int rev;
+
+
+    if(a1.sign != b1.sign)
+    {
+        if(a1.sign == 0)
+        {
+            negation(&b1);
+            return add(&a1, &b1);
+        }
+        else
+        {
+            negation(&a1);
+            return add(&a1, &b1);
+        }
+    }
+    else if(a1.sign && b1.sign)
+    {
+        // substarction.sign = 1;
+        negation(&a1);
+        negation(&b1);
+        rev = 1;
+
+    }
+
+    int cmp = compare(a1, b1);
+    if(cmp == 0)
+    {
+        return substarction;
+    }
+
+    if(cmp == 2)
+    {
+        Big_N temp = a1;
+        a1 = b1;
+        b1 = temp;
+        negation(&substarction);
+    }
+
+    while(a1.tail != NULL || b1.tail != NULL)
+    {
+        if(a1.tail != NULL && b1.tail != NULL)
+        {
+            if(a1.tail->data + c >= b1.tail->data)
+            {
+                s = (a1.tail->data + c - b1.tail->data);
+                c = 0;
+            }
+            else
+            {
+                s = (a1.tail->data + c + 10 - b1.tail->data);
+                c = -1;
+
+            }
+            a1.tail = a1.tail->prev;
+            b1.tail = b1.tail->prev;
+        }
+        else if(a1.tail != NULL && b1.tail == NULL)
+        {
+            if (a1.tail->data >= 1) {
+                s = ((a1.tail->data) + c);
+                c = 0;
+            }
+            else {
+                if (c != 0) {
+                    s = ((a1.tail->data) + 10 + c);
+                    c = -1;
+                }
+                else
+                    s = a1.tail->data;
+            }
+            a1.tail = a1.tail->prev;
+        }
+        isnertInFront(&substarction, s);
+    }
+
+    rem_lead_zeros(&substarction);
+    // if(rev)
+    // {
+    //     negation(&substarction);
+    // }
+
+    return substarction;
+
+    
+}
+
+
 int main()
 {
     Big_N a1, b1;
 
-    char str1[500] = "13859287346598726349856298347659826349855";
-    char str2[500]  = "960923745987203948750927340957092837904572093847057293048750983479";
+    char str1[500] = "12345678910";
+    char str2[500]  = "-1234567891011";
 
     init_num(&a1);
     init_num(&b1);
