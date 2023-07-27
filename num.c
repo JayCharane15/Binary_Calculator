@@ -86,6 +86,7 @@ void isnertInFront(Big_N* num, int val)
     node* nn = malloc(sizeof(node));
     if(!nn)
     {
+        printf("Malloc failed");
         return;
     }
     nn->prev = nn->next = NULL;
@@ -117,6 +118,8 @@ void insertInEnd(Big_N* num, int val )
     node* nn = malloc(sizeof(node));
     if(!nn)
     {
+        printf("Malloc failed");
+
         return;
 
     }
@@ -387,14 +390,84 @@ Big_N sub(Big_N* a, Big_N* b)
 
     
 }
+Big_N  mult(Big_N* a, Big_N* b)
+{
+    rem_lead_zeros(a);
+    rem_lead_zeros(b);
+    printf("lead zeros removed\n");
+
+
+    Big_N multiplication;
+    init_num(&multiplication);
+    
+
+    Big_N a1 = *a;
+    Big_N b1 = *b;
+
+    if(a1.size == 0 || b1.size == 0)
+    {
+        return multiplication;
+    }
+    if(a1.sign != b1.sign)
+    {
+        multiplication.sign = 1;
+    }
+
+
+    int k = 0;
+
+    while(b1.tail != NULL)
+    {
+        
+        a1 = *a;
+        int c,s;
+        c = s = 0;
+
+        Big_N temp;
+        init_num(&temp);
+
+        while(a1.tail != NULL)
+        {
+            s = (a1.tail->data * b1.tail->data + c) % 10;
+            c = (a1.tail->data * b1.tail->data + c) / 10;
+            isnertInFront(&temp, s);
+            a1.tail = a1.tail->prev;
+        }
+       
+        if(c != 0)
+        {
+            isnertInFront(&temp, c);
+        }
+
+
+        for(int i = 0; i < k; i++)
+        {
+            insertInEnd(&temp, 0);
+
+        }
+
+
+        k++;
+        multiplication = add(&multiplication, &temp);
+
+        display(multiplication);
+        // destroy(&temp);
+        b1.tail = b1.tail->prev;
+        
+        
+    }
+
+    return multiplication;
+
+}
 
 
 int main()
 {
     Big_N a1, b1;
 
-    char str1[500] = "12345678910";
-    char str2[500]  = "-1234567891011";
+    char str1[500] = "123458395223737981";
+    char str2[500]  = "-123134918390174811781934911";
 
     init_num(&a1);
     init_num(&b1);
@@ -413,8 +486,8 @@ int main()
     // Big_N c = add(&a1, &b1);
     Big_N c;
     init_num(&c);
-
-    c = add(&a1, &b1);
+    printf("Checkpoint1\n");
+    c = mult(&a1, &b1);
 
     display(c);
 
