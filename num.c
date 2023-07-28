@@ -17,43 +17,47 @@ void negation(Big_N *num) {
 void rem_lead_zeros(Big_N* num)
 {
     node* temp = num->head;
-
-    node* follow = temp;
+    node* follow;
     int count = 0;
-    while(temp && temp->data == 0)
-    {
+    Big_N new;
+    init_num(&new);
+
+    while (temp && temp->data == 0) {
         follow = temp;
-        free(follow);
-        count++;
         temp = temp->next;
-
+	/*free the leading zeros*/
+        free(follow);
+	
+        count++;
     }
-
-    if(temp == NULL)
-    {
-        Big_N new;
-        init_num(&new);
-
-        *num = new;
-        return;
+    if(temp == NULL) {
+	    *num = new;
+	    return;
     }
-
-    num->size -= count;
     temp->prev = NULL;
     num->head = temp;
+    num->size -= count;
+    return;
 }
 
 
 void destroy(Big_N* num)
 {
+    Big_N new;
+    init_num(&new);
+    *num = new;
+
+
     node* temp = num->head;
     node* follow;
     while(temp)
     {
         follow = temp;
-        free(follow);
         temp = temp->next;
+        free(follow);
     }
+
+    
 }
 
 void display(Big_N num)
@@ -292,6 +296,10 @@ Big_N add(Big_N *a, Big_N *b)
 
 Big_N sub(Big_N* a, Big_N* b)
 {
+    if(b->size == 1 && b->head->data == 0)
+    {
+        return *a;
+    }
     rem_lead_zeros(a);
     rem_lead_zeros(b);
 
@@ -342,6 +350,10 @@ Big_N sub(Big_N* a, Big_N* b)
         b1 = temp;
         negation(&substarction);
     }
+    if(cmp == 1)
+    {
+        substarction.sign = 0;
+    }
 
     while(a1.tail != NULL || b1.tail != NULL)
     {
@@ -378,13 +390,9 @@ Big_N sub(Big_N* a, Big_N* b)
             a1.tail = a1.tail->prev;
         }
         isnertInFront(&substarction, s);
+        // display(substarction);
     }
-
     rem_lead_zeros(&substarction);
-    // if(rev)
-    // {
-    //     negation(&substarction);
-    // }
 
     return substarction;
 
@@ -394,7 +402,7 @@ Big_N  mult(Big_N* a, Big_N* b)
 {
     rem_lead_zeros(a);
     rem_lead_zeros(b);
-    printf("lead zeros removed\n");
+
 
 
     Big_N multiplication;
@@ -450,8 +458,8 @@ Big_N  mult(Big_N* a, Big_N* b)
         k++;
         multiplication = add(&multiplication, &temp);
 
-        display(multiplication);
-        // destroy(&temp);
+        // display(multiplication);
+        destroy(&temp);
         b1.tail = b1.tail->prev;
         
         
@@ -462,12 +470,223 @@ Big_N  mult(Big_N* a, Big_N* b)
 }
 
 
+void delete_from_end(Big_N* num)
+{
+    if(num->size == 1)
+    {
+        free(num->tail);
+        Big_N new;
+        init_num(&new);
+        *num = new;
+        return;
+    }
+    node* temp = num->tail;
+
+    num->tail = temp->prev;
+
+    free(temp);
+}
+
+Big_N division(Big_N* l, Big_N* m)
+{
+    rem_lead_zeros(l);
+    rem_lead_zeros(m);
+
+    Big_N a1 = *l;
+    Big_N b1 = *m;
+
+    Big_N one;
+    init_num(&one);
+    insertInEnd(&one, 1);
+
+    int sign = 0;
+    if(a1.sign != b1.sign)
+    {
+        sign = 1;
+    }
+
+    Big_N ex, mp, pr, a = a1, b = b1, b2, quotient, tmpfree;
+    init_num(&ex);
+    init_num(&mp);
+    init_num(&pr);
+    init_num(&quotient);
+    Big_N zero;
+    init_num(&zero);
+    insertInEnd(&zero, 0);
+
+    if(b1.size == 0)
+    {
+        printf("Zero division error detected\n");
+        return ex;
+       
+    }
+
+    if(a1.sign)
+    {
+        negation(&a1);
+    }
+    if(b1.sign)
+    {
+        negation(&b1);
+    }
+
+    int cmp = compare(a1, b1);
+
+    if(cmp == 0)
+    {
+        // printf("Entered here");
+        one.sign = sign;
+        return one;
+    }
+    if(cmp == 2)
+    {
+        
+        return quotient;
+    }
+
+    //  a/ b. Taking out n digits from a where n = b.size;
+    for(int i = 0; i < b1.size && a1.head; i++)
+    {
+        insertInEnd(&ex, a1.head->data);
+        a1.head = a1.head->next;
+
+    }
+
+    display(ex);
+
+    // Find the multiplier such that second number is just greater;
+    int i;
+    for(i = 1; i < 10; i++)
+    {
+        // printf("%d\n", i);
+        b2 = b;
+        Big_N mp_temp;
+        init_num(&mp_temp);
+
+        insertInEnd(&mp_temp, i);
+        pr = mult(&b2, &mp_temp);
+
+        int cmp = compare(ex, pr);
+
+        if(cmp == 2)
+        {
+            break;
+        }
+
+        
+
+        
+
+
+    }
+
+    display(pr);
+    printf("Checkpoint\n");
+
+    int multiplier = i-1;
+
+    Big_N mp2;
+    init_num(&mp2);
+    insertInEnd(&mp2, multiplier);
+    if(multiplier == 0)
+    {
+        pr = zero;
+        display(pr);
+        
+    }
+    else
+    {
+        pr = mult(&mp2, &b1);
+        display(pr);
+
+    }
+
+    ex = sub(&ex, &pr);
+    display(ex);
+
+    insertInEnd(&quotient, multiplier);
+    rem_lead_zeros(&quotient);
+
+
+
+    while(a1.head != NULL)
+    {
+        insertInEnd(&ex, a1.head->data);
+        rem_lead_zeros(&ex);
+
+        for(i = 1; i < 10; i++)
+        {
+            b2 = b;
+            Big_N mp_temp;
+            init_num(&mp_temp);
+
+            insertInEnd(&mp_temp, i);
+            pr = mult(&b2, &mp_temp);
+
+            int cmp = compare(ex, pr);
+
+            if(cmp == 2)
+            {
+                break;
+            }
+
+        }
+
+        multiplier = i - 1;
+        insertInEnd(&quotient, multiplier);
+        rem_lead_zeros(&quotient);
+
+        printf("Quotient till now is: ");
+        display(quotient);
+
+        Big_N mp_temp;
+        init_num(&mp_temp);
+        insertInEnd(&mp_temp, multiplier);
+        if(multiplier == 0)
+        {
+            pr = zero;
+            display(pr);
+
+        }
+        else
+        {
+            pr = mult(&b1, &mp_temp);
+
+        }
+
+
+        ex = sub(&ex, &pr);
+
+        display(ex);
+
+
+        a1.head = a1.head->next;
+
+    }
+
+    printf("Loop completed\n");
+    quotient.sign = sign;
+    rem_lead_zeros(&quotient);
+
+    return quotient;
+
+
+
+
+
+
+
+
+
+}
+
+
 int main()
 {
     Big_N a1, b1;
 
-    char str1[500] = "123458395223737981";
-    char str2[500]  = "-123134918390174811781934911";
+    char str1[500]  = "-1948723482611";
+    char str2[500] = "50243242";
 
     init_num(&a1);
     init_num(&b1);
@@ -486,9 +705,10 @@ int main()
     // Big_N c = add(&a1, &b1);
     Big_N c;
     init_num(&c);
-    printf("Checkpoint1\n");
-    c = mult(&a1, &b1);
+    
+    c = division(&a1, &b1);
 
+    printf("\nFinal answer: ");
     display(c);
 
     return 0;
