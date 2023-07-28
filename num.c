@@ -681,35 +681,35 @@ Big_N division(Big_N* l, Big_N* m)
 }
 
 
-int main()
-{
-    Big_N a1, b1;
+// int main()
+// {
+//     Big_N a1, b1;
 
-    char str1[500]  = "-1948723482611";
-    char str2[500] = "50243242";
+//     char str1[500]  = "-1948723482611";
+//     char str2[500] = "50243242";
 
-    init_num(&a1);
-    init_num(&b1);
+//     init_num(&a1);
+//     init_num(&b1);
 
-    for(int i = 0; str1[i] != '\0'; i++)
-    {
-        insertInEnd(&a1, str1[i] - '0');
-    }
+//     for(int i = 0; str1[i] != '\0'; i++)
+//     {
+//         insertInEnd(&a1, str1[i] - '0');
+//     }
 
-    // display(a1);
-    for(int i = 0; str2[i] != '\0'; i++)
-    {
-        insertInEnd(&b1, str2[i] - '0');
-    }
+//     // display(a1);
+//     for(int i = 0; str2[i] != '\0'; i++)
+//     {
+//         insertInEnd(&b1, str2[i] - '0');
+//     }
 
-    // Big_N c = add(&a1, &b1);
-    Big_N c;
-    init_num(&c);
+//     // Big_N c = add(&a1, &b1);
+//     Big_N c;
+//     init_num(&c);
     
-    c = division(&a1, &b1);
+//     c = division(&a1, &b1);
 
-    printf("\nFinal answer: ");
-    display(c);
+//     printf("\nFinal answer: ");
+//     display(c);
 
-    return 0;
-}
+//     return 0;
+// }

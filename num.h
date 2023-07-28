@@ -28,4 +28,13 @@ void rem_lead_zeros(Big_N* num);
 void destroy(Big_N* num);
 void display(Big_N num);
 void isnertInFront(Big_N* num, int val);
+void insertInEnd(Big_N* num, int val );
 int compare(Big_N a, Big_N b);
+int length(Big_N num);
+
+
+Big_N add(Big_N *a, Big_N *b);
+Big_N sub(Big_N* a, Big_N* b);
+
+Big_N  mult(Big_N* a, Big_N* b);
+Big_N division(Big_N* l, Big_N* m);
